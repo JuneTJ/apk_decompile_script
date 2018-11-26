@@ -1,4 +1,4 @@
-##apk_decompile_script
+## apk_decompile_script
 PREPARATION: The APK decompile script will use the apktool, dex2jar, jd-gui, please ensure that they are already installed.
 
 First, exports the environment from ~/.bashrc; please add following lines to the end of ~/.bashrc
