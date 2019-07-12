@@ -29,17 +29,29 @@ do
   echo "[CMD] apk decode: apktool d -o ${decompileDir}/${bname}_release ${apkDir}/${bname}.apk"
   apktool d -o ${decompileDir}/${bname}_release ${apkDir}/${bname}.apk
 
-  echo "[CMD] apk build: apktool b ${decompileDir}/${bname}_release"
+  echo "[CMD] apk build: apktool b ${decompileDir}/${bname}_release -- generates dex files"
   apktool b ${decompileDir}/${bname}_release
 
-  cd $dexToolsDir
-  echo "[CMD] Switch to dex2jar Dir: "$(pwd)
+  cd ${decompileDir}/${bname}_release/build/apk
+  dexes='ls *.dex'
+  for dex in $dexes
+  do
+    dexbname=$(basename $dex .dex)
+    
+    if [ $dexbname == "ls" ]
+    then
+      continue
+    fi
 
-  echo "[CMD] Generate jar file:\n./d2j-dex2jar.sh -o ${jarOutputDir}/${bname}.jar ${decompileDir}/${bname}_release/build/apk/classes.dex"
-  ./d2j-dex2jar.sh -o ${jarOutputDir}/${bname}.jar ${decompileDir}/${bname}_release/build/apk/classes.dex
+    dexidx=`echo ${dexbname} | tr -cd "[0-9]"`
+    echo "dex name: $dexbname, idx is $dexidx"
+
+    echo "[CMD] $dexToolsDir/d2j-dex2jar.sh -o ${jarOutputDir}/${bname}/${bname}${dexidx}.jar ${decompileDir}/${bname}_release/build/apk/${dexbname}.dex"
+    $dexToolsDir/d2j-dex2jar.sh -o ${jarOutputDir}/${bname}/${bname}${dexidx}.jar ${decompileDir}/${bname}_release/build/apk/${dexbname}.dex
+  done
+  
 done
 
 echo "Action Done!"
 exit 0
-
 
